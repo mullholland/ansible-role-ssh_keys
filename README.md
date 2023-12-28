@@ -16,7 +16,7 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
   become: true
   gather_facts: true
   vars:
-    ssh_key_generate:
+    ssh_key_generate_keys:
       - user: "test1"
         path: "/home/test1/.ssh/id_rsa"
       - user: "test1"
@@ -62,7 +62,6 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
         path: "/home/test1/.ssh/id_custom4"
         state: "absent"
 
-
     ssh_key_authorized_keys:
       - name: "test1"
         authorized_keys:
@@ -91,6 +90,7 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
         authorized_keys:
           - key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFHRY74q8yDzW2NYwv6nLbSJUqIM2443vA//OM30bmix test@key6"
             state: "absent"
+
   roles:
     - role: "mullholland.ssh_keys"
 ```

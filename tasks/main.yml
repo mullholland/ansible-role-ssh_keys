@@ -1,7 +1,6 @@
 ---
 - name: Include ssh key generation
   ansible.builtin.include_tasks: generate.yml
-  loop: "{{ ssh_key_generate_keys_all }}"
   when:
     - ssh_key_generate_keys_all
     - ssh_key_generate_keys_all|length

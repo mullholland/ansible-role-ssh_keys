@@ -6,6 +6,7 @@
     group: "{{ item.group | default(item.user) }}"
     mode: "0700"
     state: directory
+  loop: "{{ ssh_key_generate_keys_all }}"
 
 - name: generate | Generate ssh key pair
   community.crypto.openssh_keypair:
@@ -17,3 +18,4 @@
     mode: "{{ item.mode | default(omit) }}"
     passphrase: "{{ item.passphrase | default(omit) }}"
     state: "{{ item.state | default(omit) }}"
+  loop: "{{ ssh_key_generate_keys_all }}"
