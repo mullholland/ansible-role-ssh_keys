@@ -120,11 +120,26 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
         group: "test1"
       - name: "test2"
         group: "test2"
+    packages_debian:
+      - "openssh-client"
+    packages_redhat:
+      - "openssh-clients"
+    users_groups:
+      - name: "test1"
+      - name: "test2"
+
+    users:
+      - name: "test1"
+        group: "test1"
+      - name: "test2"
+        group: "test2"
 
   roles:
     - name: mullholland.repository_epel
     - name: mullholland.packages
+    - name: mullholland.packages
     - name: mullholland.pip
+    - name: mullholland.users
     - name: mullholland.users
 ```
 
@@ -226,6 +241,8 @@ The following roles are used to prepare a system. You can prepare your system in
 |[mullholland.pip](https://galaxy.ansible.com/mullholland/pip)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-pip/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-pip/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-pip/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-pip)|
 |[mullholland.packages](https://galaxy.ansible.com/mullholland/packages)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-packages/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-packages/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-packages/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-packages)|
 |[mullholland.users](https://galaxy.ansible.com/mullholland/users)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-users/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-users/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-users/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-users)|
+|[mullholland.packages](https://galaxy.ansible.com/mullholland/packages)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-packages/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-packages/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-packages/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-packages)|
+|[mullholland.users](https://galaxy.ansible.com/mullholland/users)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-users/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-users/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-users/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-users)|
 
 ## [Context](#context)
 
@@ -241,7 +258,6 @@ This role has been tested on these [container images](https://hub.docker.com/u/m
 |container|tags|
 |---------|----|
 |[EL](https://hub.docker.com/r/mullholland/enterpriselinux)|8, 9|
-|[Amazon](https://hub.docker.com/r/mullholland/amazonlinux)|Candidate|
 |[Fedora](https://hub.docker.com/r/mullholland/fedora/)|all|
 |[Ubuntu](https://hub.docker.com/r/mullholland/ubuntu)|focal, jammy|
 |[Debian](https://hub.docker.com/r/mullholland/debian)|all|
