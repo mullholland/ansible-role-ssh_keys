@@ -30,8 +30,6 @@ jobs:
       matrix:
         config:
           - image: "centos"
-            tag: "7"
-          - image: "centos"
             tag: "8"
           - image: "centos"
             tag: "latest"
@@ -44,11 +42,9 @@ jobs:
           - image: "fedora"
             tag: "rawhide"
           - image: "ubuntu"
-            tag: "latest"
-          - image: "ubuntu"
             tag: "focal"
           - image: "ubuntu"
-            tag: "bionic"
+            tag: "latest"
           - image: "debian"
             tag: "latest"
           - image: "debian"

@@ -7,29 +7,22 @@
     pip_packages:
       - "cryptography"
       - "bcrypt"
+    packages_debian:
+      - "openssh-client"
+    packages_redhat:
+      - "openssh-clients"
+    users_groups:
+      - name: "test1"
+      - name: "test2"
+
+    users:
+      - name: "test1"
+        group: "test1"
+      - name: "test2"
+        group: "test2"
 
   roles:
     - name: mullholland.repository_epel
+    - name: mullholland.packages
     - name: mullholland.pip
-
-  tasks:
-    - name: Ensure test groups exists
-      ansible.builtin.group:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - "test1"
-        - "test2"
-
-    - name: Ensure test users exists
-      ansible.builtin.user:
-        name: "{{ item }}"
-        group: "{{ item }}"
-      with_items:
-        - "test1"
-        - "test2"
-
-    - name: Install openssh
-      ansible.builtin.package:
-        name:
-          - "openssh-client"
+    - name: mullholland.users
