@@ -1,0 +1,14 @@
+---
+- name: authorized_keys | Manage authorized keys
+  authorized_key:
+    exclusive: "{{ item.1.exclusive | default(authorized_key_exclusive) | default(omit) }}"
+    key: "{{ item.1.key }}"
+    key_options: "{{ item.1.key_options | default(authorized_key_key_options) | default(omit) }}"
+    manage_dir: "{{ item.1.manage_dir | default(authorized_key_manage_dir)  | default(omit) }}"
+    path: "{{ item.1.path | default(omit) }}"
+    state: "{{ item.1.state | default(authorized_key_state) | default(omit) }}"
+    user: "{{ item.0.name }}"
+  when: (item.0.state | default('present')) != "absent"
+  loop: "{{ ssh_key_authorized_keys_all | subelements('authorized_keys') }}"
+  loop_control:
+    label: "{{ item.0.name }}"

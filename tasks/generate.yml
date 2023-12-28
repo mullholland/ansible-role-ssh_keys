@@ -1,0 +1,19 @@
+---
+- name: generate | Create ssh key directory
+  ansible.builtin.file:
+    path: "{{ item.path | dirname }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.group | default(item.user) }}"
+    mode: "0700"
+    state: directory
+
+- name: generate | Generate ssh key pair
+  community.crypto.openssh_keypair:
+    path: "{{ item.path }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.group | default(item.user) }}"
+    type: '{{ item.type | default(omit) }}'
+    size: "{{ item.size | default(omit) }}"
+    mode: "{{ item.mode | default(omit) }}"
+    passphrase: "{{ item.passphrase | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"

@@ -1,0 +1,35 @@
+---
+galaxy_info:
+  author: mullholland
+  namespace: mullholland
+  role_name: ssh_keys
+  description: Manages ssh keys for users on linux users.
+  license: MIT
+  company: none
+  min_ansible_version: "2.10"
+
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Amazon
+      versions:
+        - Candidate
+    - name: Fedora
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+
+  galaxy_tags:
+    - cloud
+    - development
+    - webserver
+    - ssh
+    - security
+
+dependencies: []

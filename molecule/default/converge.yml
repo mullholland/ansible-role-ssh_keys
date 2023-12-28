@@ -1,0 +1,83 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    ssh_key_generate:
+      - user: "test1"
+        path: "/home/test1/.ssh/id_rsa"
+      - user: "test1"
+        path: "/home/test1/.ssh/id_dsa"
+        type: "dsa"
+    ssh_key_generate_keys_host:
+      - user: "test1"
+        path: "/home/test1/.ssh/id_ecdsa"
+        type: "ecdsa"
+      - user: "test1"
+        path: "/home/test1/.ssh/id_ed25519"
+        type: "ed25519"
+      - user: "test1"
+        path: "/home/test1/.ssh/id_none"
+        state: "absent"
+    ssh_key_generate_keys_group:
+      - user: "test2"
+        group: "test2"
+        path: "/home/test2/.ssh/id_rsa"
+        size: "2048"
+        type: "rsa"
+        mode: "0600"
+        passphrase: "SuperSecret"
+        comment: "MyAnsibleGeneratedKey"
+
+    ssh_key_copy_keys:
+      - user: "test1"
+        group: "test1"
+        path: "/home/test1/.ssh/id_custom"
+        private_key: "molecule/default/id_custom"
+        public_key: "molecule/default/id_custom.pub"
+    ssh_key_copy_keys_host:
+      - user: "test1"
+        path: "/home/test1/.ssh/id_custom2"
+        private_key: "molecule/default/id_custom"
+        public_key: "molecule/default/id_custom.pub"
+    ssh_key_copy_keys_group:
+      - user: "test1"
+        path: "/home/test1/.ssh/id_custom3"
+        private_key: "molecule/default/id_custom"
+        public_key: "molecule/default/id_custom.pub"
+      - user: "test1"
+        path: "/home/test1/.ssh/id_custom4"
+        state: "absent"
+
+
+    ssh_key_authorized_keys:
+      - name: "test1"
+        authorized_keys:
+          - key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRjjIGC9+IuHJGTj9Uza95w1ftFJaWsE3JRFU0pnY55 test@key1"
+      - name: "test1"
+        authorized_keys:
+          - key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAhD9U3aH1C1kp73VSqP7TPgOrdmISPeduwGS+KVoH72 test@key2"
+            options: "none"
+            path: "/home/test1/.ssh/authorized_keys2"
+            manage_dir: "true"
+            exclusive: "true"
+            state: "present"
+    ssh_key_authorized_keys_host:
+      - name: "test1"
+        authorized_keys:
+          - key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF0TnLs65tH9G97iVK04X4Bm6Ut6gt6mWrQQVWtSOqxW test@key3"
+      - name: "test1"
+        authorized_keys:
+          - key: "{{ lookup('file', 'molecule/default/test-key5.pub') }}"
+            state: "absent"
+    ssh_key_authorized_keys_group:
+      - name: "test1"
+        authorized_keys:
+          - key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA87Rbzv+FAlhpeABa89m5kS85Pbrec6hmQ1VkS42s+6 test@key4"
+      - name: "test1"
+        authorized_keys:
+          - key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFHRY74q8yDzW2NYwv6nLbSJUqIM2443vA//OM30bmix test@key6"
+            state: "absent"
+  roles:
+    - role: "ansible-role-ssh_keys"

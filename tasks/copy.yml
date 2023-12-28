@@ -1,0 +1,44 @@
+---
+- name: copy | copy private-keys
+  ansible.builtin.copy:
+    src: "{{ item.private_key }}"
+    dest: "{{ item.path }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.group | default(item.user) }}"
+    mode: "0600"
+  loop: "{{ ssh_key_copy_keys_all }}"
+  when:
+    - item.private_key is defined
+    - item.private_key|length
+    - (item.state is undefined or item.state == 'present')
+
+- name: copy | copy public-keys
+  ansible.builtin.copy:
+    src: "{{ item.public_key }}"
+    dest: "{{ item.path }}.pub"
+    owner: "{{ item.user }}"
+    group: "{{ item.group | default(item.user) }}"
+    mode: "0644"
+  loop: "{{ ssh_key_copy_keys_all }}"
+  when:
+    - item.public_key is defined
+    - item.public_key|length
+    - (item.state is undefined or item.state == 'present')
+
+- name: copy | remove public-keys
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ ssh_key_copy_keys_all }}"
+  when:
+    - item.state is defined
+    - item.state == 'present'
+
+- name: copy | remove private-keys
+  ansible.builtin.file:
+    path: "{{ item.path }}.pub"
+    state: absent
+  loop: "{{ ssh_key_copy_keys_all }}"
+  when:
+    - item.state is defined
+    - item.state == 'present'

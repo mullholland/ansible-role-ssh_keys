@@ -1,0 +1,6 @@
+---
+ssh_key_generate_keys_all: "{{ ssh_key_generate_keys + ssh_key_generate_keys_group + ssh_key_generate_keys_host }}"
+
+ssh_key_copy_keys_all: "{{ ssh_key_copy_keys + ssh_key_copy_keys_group + ssh_key_copy_keys_host }}"
+
+ssh_key_authorized_keys_all: "{{ ssh_key_authorized_keys + ssh_key_authorized_keys_group + ssh_key_authorized_keys_host }}"

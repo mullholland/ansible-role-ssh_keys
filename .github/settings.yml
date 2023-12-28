@@ -1,0 +1,8 @@
+---
+#
+# Ansible managed
+#
+repository:
+  description: Manages ssh keys for users on linux users.
+  homepage: https://mullholland.net
+  topics: cloud, development, webserver, ssh, security, ansible, molecule, tox, playbook

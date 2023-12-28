@@ -1,0 +1,75 @@
+---
+# Requirements
+# The below requirements are needed on the host that executes this module.
+# ssh-keygen (if backend=openssh)
+# cryptography >= 2.6 (if backend=cryptography and OpenSSH < 7.8 is installed)
+# cryptography >= 3.0 (if backend=cryptography and OpenSSH >= 7.8 is installed)
+
+
+# Generate keys
+# ssh_key_generate_keys, ssh_key_generate_keys_host and ssh_key_generate_keys_group
+# are merged when managing the authorized keys.
+# You can use the host and group lists to specify keys per host or group off hosts.
+ssh_key_generate_keys: []
+ssh_key_generate_keys_host: []
+ssh_key_generate_keys_group: []
+#  - user: ""        # (required)
+#    group: ""       # (optional). Defaults to same as "owner"
+#    path: ""        # (required). Where to create the key. Needs full Filename + Path (eg: -> /home/user/.ssh/id_rsa)
+#    state: ""       # (optional). Defaults to "present"
+#    size: ""        # (optional). Defaults to 4096
+#    type: ""        # (optional).["rsa", "dsa", "rsa1", "ecdsa", "ed25519"] Defaults to rsa
+#    mode: ""        # (optional). Defaults to "0600"
+#    passphrase: ""  # (optional) Passphrase used to decrypt an existing private key or encrypt a newly generated private key.
+#    comment: ""     # (optional)
+
+ssh_key_copy_keys: []
+#  - user: ""         # (required)
+#    group: ""        # (optional). Defaults to same as "user"
+#    path: ""         # (required). Where to create the key. Needs full Filename + Path (eg: -> /home/user/.ssh/id_rsa)
+#    private_key: ""  # (optional). Will be created at the path
+#    public_key: ""   # (optional).  Will be created at the path, with the ending ".pub"
+ssh_key_copy_keys_host: []
+ssh_key_copy_keys_group: []
+
+
+# exclusively maanged the authorized keys file via template
+# ssh_key_authorized_keys, ssh_key_authorized_keys_host and ssh_key_authorized_keys_group
+# are merged when managing the authorized keys.
+# You can use the host and group lists to specify keys per host or group off hosts.
+ssh_key_authorized_keys: []
+ssh_key_authorized_keys_host: []
+ssh_key_authorized_keys_group: []
+#  - name ""          # (Required). The username on the remote host whose authorized_keys file will be modified.
+#    authorized_keys:
+#      - key: ""           # (Required). The SSH public key(s), as a string or (since Ansible 1.9) url (https://github.com/username.keys).
+#                                        at least 1 key is required. Can contain mutliplre keys as a list with multpile options.
+#                                        if you want multiple exclusive keys in a file, all keys mus be in one key subelement
+#        options: ""       # (optional). A string of ssh key options to be prepended to the key in the authorized_keys file.
+#        path: ""          # (optional). Alternate path to the authorized_keys file. When unset, this value defaults to ~/.ssh/authorized_keys.
+#        manage_dir: ""    # (optional). Whether this module should manage the directory of the authorized key file.
+#                                        If set to true, the module will create the directory, as well as set the owner and permissions of
+#                                        an existing directory. Be sure to set manage_dir=false if you are using an alternate directory for
+#                                        authorized_keys, as set with path, since you could lock yourself out of SSH access.
+#        exclusive: ""     # (optional). Whether to remove all other non-specified keys from the authorized_keys file.
+#                                        Multiple keys can be specified in a single key string value by separating them by newlines.
+#                                        This option is not loop aware, so if you use with_ , it will be exclusive per iteration of the loop.
+#                                        If you want multiple keys in the file you need to pass them all to key in a single batch as mentioned above.
+#        state: "present"  # (optional). Whether the given key (with the given key_options) should or should not be in the file.
+
+#  - user: ""          # (Required). The username on the remote host whose authorized_keys file will be modified.
+#    path: ""          # (optional). Alternate path to the authorized_keys file. When unset, this value defaults to ~/.ssh/authorized_keys.
+#    manage_dir: ""    # (optional). Whether this module should manage the directory of the authorized key file.
+#                                    If set to true, the module will create the directory, as well as set the owner and permissions of
+#                                    an existing directory. Be sure to set manage_dir=false if you are using an alternate directory for
+#                                    authorized_keys, as set with path, since you could lock yourself out of SSH access.
+#    exclusive: ""     # (optional). Whether to remove all other non-specified keys from the authorized_keys file.
+#                                    Multiple keys can be specified in a single key string value by separating them by newlines.
+#                                    This option is not loop aware, so if you use with_ , it will be exclusive per iteration of the loop.
+#                                    If you want multiple keys in the file you need to pass them all to key in a single batch as mentioned above.
+#    keys: []          # (Required). List of multiple keys, which should be inside the file
+#      - key: ""           # (Required). The SSH public key(s), as a string or (since Ansible 1.9) url (https://github.com/username.keys).
+#                                        at least 1 key is required. Can contain mutliplre keys as a list with multpile options.
+#                                        if you want multiple exclusive keys in a file, all keys mus be in one key subelement
+#        options: ""       # (optional). A string of ssh key options to be prepended to the key in the authorized_keys file.
+#        state: "present"  # (optional). Whether the given key (with the given key_options) should or should not be in the file.

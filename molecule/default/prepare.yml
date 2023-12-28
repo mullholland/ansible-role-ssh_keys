@@ -1,0 +1,35 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    pip_packages:
+      - "cryptography"
+      - "bcrypt"
+
+  roles:
+    - name: mullholland.repository_epel
+    - name: mullholland.pip
+
+  tasks:
+    - name: Ensure test groups exists
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - "test1"
+        - "test2"
+
+    - name: Ensure test users exists
+      ansible.builtin.user:
+        name: "{{ item }}"
+        group: "{{ item }}"
+      with_items:
+        - "test1"
+        - "test2"
+
+    - name: Install openssh
+      ansible.builtin.package:
+        name:
+          - "openssh-client"

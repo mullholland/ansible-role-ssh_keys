@@ -1,0 +1,19 @@
+---
+- name: Include ssh key generation
+  ansible.builtin.include_tasks: generate.yml
+  loop: "{{ ssh_key_generate_keys_all }}"
+  when:
+    - ssh_key_generate_keys_all
+    - ssh_key_generate_keys_all|length
+
+- name: Include ssh key copy
+  ansible.builtin.include_tasks: copy.yml
+  when:
+    - ssh_key_copy_keys_all
+    - ssh_key_copy_keys_all|length
+
+- name: Include authorized_keys management
+  ansible.builtin.include_tasks: authorized_keys.yml
+  when:
+    - ssh_key_authorized_keys_all
+    - ssh_key_authorized_keys_all|length
