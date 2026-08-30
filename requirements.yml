@@ -5,3 +5,11 @@ roles:
   - name: mullholland.pip
   - name: mullholland.packages
   - name: mullholland.users
+
+collections:
+  # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
+  - name: ansible.posix
+    source: https://galaxy.ansible.com
+  # https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html
+  - name: community.crypto
+    source: https://galaxy.ansible.com

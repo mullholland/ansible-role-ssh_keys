@@ -1,15 +1,14 @@
 ---
 - name: Converge
   hosts: all
-  become: true
   gather_facts: true
   vars:
+    # DSA is not tested: modern ssh-keygen refuses to generate DSA keys at
+    # all ("unknown key type dsa"), it's not something this role can work
+    # around.
     ssh_key_generate_keys:
       - user: "test1"
         path: "/home/test1/.ssh/id_rsa"
-      - user: "test1"
-        path: "/home/test1/.ssh/id_dsa"
-        type: "dsa"
     ssh_key_generate_keys_host:
       - user: "test1"
         path: "/home/test1/.ssh/id_ecdsa"
@@ -80,4 +79,4 @@
             state: "absent"
 
   roles:
-    - role: "ansible-role-ssh_keys"
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"

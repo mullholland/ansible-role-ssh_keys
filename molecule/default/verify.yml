@@ -1,14 +1,11 @@
 ---
 - name: Verify
   hosts: all
-  become: true
   gather_facts: true
   vars:
     generation:
       - user: "test1"
         path: "/home/test1/.ssh/id_rsa"
-      - user: "test1"
-        path: "/home/test1/.ssh/id_dsa"
       - user: "test1"
         path: "/home/test1/.ssh/id_ecdsa"
       - user: "test1"

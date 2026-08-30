@@ -13,15 +13,14 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
 ---
 - name: Converge
   hosts: all
-  become: true
   gather_facts: true
   vars:
+    # DSA is not tested: modern ssh-keygen refuses to generate DSA keys at
+    # all ("unknown key type dsa"), it's not something this role can work
+    # around.
     ssh_key_generate_keys:
       - user: "test1"
         path: "/home/test1/.ssh/id_rsa"
-      - user: "test1"
-        path: "/home/test1/.ssh/id_dsa"
-        type: "dsa"
     ssh_key_generate_keys_host:
       - user: "test1"
         path: "/home/test1/.ssh/id_ecdsa"
@@ -92,7 +91,7 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
             state: "absent"
 
   roles:
-    - role: "mullholland.ssh_keys"
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
 ```
 
 The machine needs to be prepared. In CI this is done using [`molecule/default/prepare.yml`](https://github.com/mullholland/ansible-role-ssh_keys/blob/master/molecule/default/prepare.yml):
@@ -101,7 +100,6 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
 ---
 - name: Prepare
   hosts: all
-  become: true
   gather_facts: true
   vars:
     pip_packages:
@@ -120,29 +118,35 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
         group: "test1"
       - name: "test2"
         group: "test2"
-    packages_debian:
-      - "openssh-client"
-    packages_redhat:
-      - "openssh-clients"
-    users_groups:
-      - name: "test1"
-      - name: "test2"
-
-    users:
-      - name: "test1"
-        group: "test1"
-      - name: "test2"
-        group: "test2"
 
   roles:
     - name: mullholland.repository_epel
     - name: mullholland.packages
-    - name: mullholland.packages
     - name: mullholland.pip
     - name: mullholland.users
-    - name: mullholland.users
-```
 
+  tasks:
+    - name: Install cryptography/bcrypt via apt on Debian 12+ / Ubuntu 24.04+
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-cryptography
+        - python3-bcrypt
+      when: (ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 12) or
+            (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 24)
+
+    # mullholland.pip only installs the pip binary itself, it no longer
+    # installs pip packages (removed due to PEP 668), so the
+    # community.crypto.openssh_keypair module's Python dependencies need to
+    # be installed here directly on every other distribution.
+    - name: Install python dependencies for community.crypto modules
+      ansible.builtin.pip:
+        name: "{{ pip_packages }}"
+        state: present
+      when: not ((ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 12) or
+                 (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 24))
+```
 
 
 ## [Role Variables](#role-variables)
@@ -237,19 +241,14 @@ The following roles are used to prepare a system. You can prepare your system in
 
 | Requirement | GitHub | GitLab |
 |-------------|--------|--------|
-|[mullholland.repository_epel](https://galaxy.ansible.com/mullholland/repository_epel)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-repository_epel/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-repository_epel/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-repository_epel/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-repository_epel)|
-|[mullholland.pip](https://galaxy.ansible.com/mullholland/pip)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-pip/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-pip/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-pip/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-pip)|
-|[mullholland.packages](https://galaxy.ansible.com/mullholland/packages)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-packages/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-packages/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-packages/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-packages)|
-|[mullholland.users](https://galaxy.ansible.com/mullholland/users)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-users/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-users/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-users/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-users)|
-|[mullholland.packages](https://galaxy.ansible.com/mullholland/packages)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-packages/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-packages/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-packages/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-packages)|
-|[mullholland.users](https://galaxy.ansible.com/mullholland/users)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-users/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-users/actions)|[![Build Status GitLab](https://gitlab.com/opensourceunicorn/ansible-role-users/badges/master/pipeline.svg)](https://gitlab.com/opensourceunicorn/ansible-role-users)|
+|[mullholland.repository_epel](https://galaxy.ansible.com/mullholland/repository_epel)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-repository_epel/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-repository_epel/actions)|[![Build Status GitLab](https://gitlab.com/mullholland-github-mirror/ansible-role-repository_epel/badges/master/pipeline.svg)](https://gitlab.com/mullholland-github-mirror/ansible-role-repository_epel)|
+|[mullholland.pip](https://galaxy.ansible.com/mullholland/pip)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-pip/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-pip/actions)|[![Build Status GitLab](https://gitlab.com/mullholland-github-mirror/ansible-role-pip/badges/master/pipeline.svg)](https://gitlab.com/mullholland-github-mirror/ansible-role-pip)|
+|[mullholland.packages](https://galaxy.ansible.com/mullholland/packages)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-packages/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-packages/actions)|[![Build Status GitLab](https://gitlab.com/mullholland-github-mirror/ansible-role-packages/badges/master/pipeline.svg)](https://gitlab.com/mullholland-github-mirror/ansible-role-packages)|
+|[mullholland.users](https://galaxy.ansible.com/mullholland/users)|[![Build Status GitHub](https://github.com/mullholland/ansible-role-users/workflows/Ansible%20Molecule/badge.svg)](https://github.com/mullholland/ansible-role-users/actions)|[![Build Status GitLab](https://gitlab.com/mullholland-github-mirror/ansible-role-users/badges/master/pipeline.svg)](https://gitlab.com/mullholland-github-mirror/ansible-role-users)|
 
 ## [Context](#context)
 
 This role is a part of many compatible roles. Have a look at [the documentation of these roles](https://mullholland.net) for further information.
-
-Here is an overview of related roles:
-![dependencies](https://raw.githubusercontent.com/mullholland/ansible-role-ssh_keys/png/requirements.png "Dependencies")
 
 ## [Compatibility](#compatibility)
 
@@ -257,16 +256,19 @@ This role has been tested on these [container images](https://hub.docker.com/u/m
 
 |container|tags|
 |---------|----|
-|[EL](https://hub.docker.com/r/mullholland/enterpriselinux)|8, 9|
+|[EL](https://hub.docker.com/r/mullholland/enterpriselinux)|all|
 |[Fedora](https://hub.docker.com/r/mullholland/fedora/)|all|
-|[Ubuntu](https://hub.docker.com/r/mullholland/ubuntu)|focal, jammy|
+|[Rocky](https://hub.docker.com/r/mullholland/rockylinux)|all|
+|[AlmaLinux](https://hub.docker.com/r/mullholland/almalinux)|all|
+|[Ubuntu](https://hub.docker.com/r/mullholland/ubuntu)|all|
 |[Debian](https://hub.docker.com/r/mullholland/debian)|all|
+|[CentOS](https://hub.docker.com/r/mullholland/centos)|all|
 
 The minimum version of Ansible required is 2.10, tests have been done to:
 
+- The version before the previous version.
 - The previous version.
 - The current version.
-- The development version.
 
 If you find issues, please register them in [GitHub](https://github.com/mullholland/ansible-role-ssh_keys/issues).
 
