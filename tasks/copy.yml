@@ -9,7 +9,7 @@
   loop: "{{ ssh_key_copy_keys_all }}"
   when:
     - item.private_key is defined
-    - item.private_key|length
+    - item.private_key|length > 0
     - (item.state is undefined or item.state == 'present')
 
 - name: copy | Copy public-keys
@@ -22,7 +22,7 @@
   loop: "{{ ssh_key_copy_keys_all }}"
   when:
     - item.public_key is defined
-    - item.public_key|length
+    - item.public_key|length > 0
     - (item.state is undefined or item.state == 'present')
 
 - name: copy | Remove public-keys

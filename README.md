@@ -15,12 +15,12 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
   hosts: all
   gather_facts: true
   vars:
+    # DSA is not tested: modern ssh-keygen refuses to generate DSA keys at
+    # all ("unknown key type dsa"), it's not something this role can work
+    # around.
     ssh_key_generate_keys:
       - user: "test1"
         path: "/home/test1/.ssh/id_rsa"
-      - user: "test1"
-        path: "/home/test1/.ssh/id_dsa"
-        type: "dsa"
     ssh_key_generate_keys_host:
       - user: "test1"
         path: "/home/test1/.ssh/id_ecdsa"
@@ -124,6 +124,28 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
     - name: mullholland.packages
     - name: mullholland.pip
     - name: mullholland.users
+
+  tasks:
+    - name: Install cryptography/bcrypt via apt on Debian 12+ / Ubuntu 24.04+
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-cryptography
+        - python3-bcrypt
+      when: (ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 12) or
+            (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 24)
+
+    # mullholland.pip only installs the pip binary itself, it no longer
+    # installs pip packages (removed due to PEP 668), so the
+    # community.crypto.openssh_keypair module's Python dependencies need to
+    # be installed here directly on every other distribution.
+    - name: Install python dependencies for community.crypto modules
+      ansible.builtin.pip:
+        name: "{{ pip_packages }}"
+        state: present
+      when: not ((ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 12) or
+                 (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 24))
 ```
 
 
