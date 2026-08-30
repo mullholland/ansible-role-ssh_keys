@@ -1,5 +1,5 @@
 ---
-- name: copy | copy private-keys
+- name: copy | Copy private-keys
   ansible.builtin.copy:
     src: "{{ item.private_key }}"
     dest: "{{ item.path }}"
@@ -12,7 +12,7 @@
     - item.private_key|length
     - (item.state is undefined or item.state == 'present')
 
-- name: copy | copy public-keys
+- name: copy | Copy public-keys
   ansible.builtin.copy:
     src: "{{ item.public_key }}"
     dest: "{{ item.path }}.pub"
@@ -25,7 +25,7 @@
     - item.public_key|length
     - (item.state is undefined or item.state == 'present')
 
-- name: copy | remove public-keys
+- name: copy | Remove public-keys
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
@@ -34,7 +34,7 @@
     - item.state is defined
     - item.state == 'present'
 
-- name: copy | remove private-keys
+- name: copy | Remove private-keys
   ansible.builtin.file:
     path: "{{ item.path }}.pub"
     state: absent

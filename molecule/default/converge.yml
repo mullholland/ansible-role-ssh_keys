@@ -1,7 +1,6 @@
 ---
 - name: Converge
   hosts: all
-  become: true
   gather_facts: true
   vars:
     ssh_key_generate_keys:
@@ -80,4 +79,4 @@
             state: "absent"
 
   roles:
-    - role: "ansible-role-ssh_keys"
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
